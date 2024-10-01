@@ -1,0 +1,50 @@
+[
+    {
+        "id": 1,
+        "serial": "A001",
+        "title": "Vintage Painting",
+        "description": "A beautiful 19th century painting.",
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSPnf96gbfyUBhFGooWsU8LADSHxQ0elHdfyQ&s",
+        "qty": 1,
+        "price": 535,
+        "start_date": "2023-09-01",
+        "end_date": "2026-09-30",
+        "closed": false
+    },
+    {
+        "id": 2,
+        "serial": "A002",
+        "title": "Antique Vase",
+        "description": "A rare 18th century vase.",
+        "image": "https://post.healthline.com/wp-content/uploads/2019/11/medjool-dates-1296x728-header-1296x728.jpg",
+        "qty": 1,
+        "price": 323,
+        "start_date": "2023-09-01",
+        "end_date": "2026-09-30",
+        "closed": false
+    },
+    {
+        "id": 3,
+        "serial": "A003",
+        "title": "Vintage Watch",
+        "description": "A classic 20th century watch.",
+        "image": "https://images.immediate.co.uk/production/volatile/sites/30/2020/02/dates-resized-14ee31f.jpg",
+        "qty": 1,
+        "price": 250,
+        "start_date": "2023-09-01",
+        "end_date": "2026-09-30",
+        "closed": false
+    },
+    {
+        "id": 4,
+        "serial": "A004",
+        "title": "Vintage Camera",
+        "description": "A rare 20th century camera.",
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR97XgicjjbQuOQz6f9BdbeW1Cr5KD39a709xsGzAgrbZNUqeFbVAgq2LZk3WEjVJpr3dM&usqp=CAU",
+        "qty": 1,
+        "price": 150,
+        "start_date": "2023-09-01",
+        "end_date": "2026-09-30",
+        "closed": false
+    }
+]

@@ -1,0 +1,281 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Auction Details - {{ auction.date_type }}</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Include jQuery here -->
+    <link rel="stylesheet" href="{% static 'styles.css' %}" />
+    <style>
+      header {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 20px;
+        background-color: #f4ffed;
+        align-content: center;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+      }
+
+      .back-button {
+        background-color: #2daa26;
+        color: white;
+        border: none;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+      }
+
+      .back-button:hover {
+        background-color: #1e8c1e;
+      }
+
+      .auction-details-container {
+        max-width: 900px;
+        margin: 0 auto;
+        text-align: center;
+        padding: 20px;
+      }
+
+      .auction-details img {
+        display: block;
+        margin: 0 auto;
+        border-radius: 50%;
+        width: 250px;
+        height: 250px;
+        object-fit: cover;
+      }
+
+      .auction-details p {
+        font-size: 20px;
+        margin: 10px 0;
+      }
+
+      .bid-button-container {
+        margin-top: 30px;
+      }
+
+      .bid-button {
+        background-color: #2daa26;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        font-size: 18px;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+
+      .bid-button:hover {
+        background-color: #1e8c1e;
+      }
+
+      .bids-table {
+        margin-top: 30px;
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .bids-table th,
+      .bids-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+      }
+
+      .bids-table th {
+        background-color: #2daa26;
+        color: white;
+      }
+      .auction-details-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      /* Card-like container for the details */
+      .auction-card {
+        background-color: white; /* White background for the card */
+        border: 1px solid #2daa26;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .auction-card img {
+        display: block;
+        margin: 0 auto 20px auto;
+        border-radius: 50%;
+        width: 250px;
+        height: 250px;
+        object-fit: cover;
+      }
+
+      .auction-card h2 {
+        font-size: 28px;
+        margin-bottom: 20px;
+      }
+
+      .auction-card p {
+        font-size: 20px;
+        margin: 10px 0;
+      }
+
+      .bid-button-container {
+        margin-top: 30px;
+      }
+
+      .bid-button {
+        background-color: #2daa26;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        font-size: 18px;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+
+      .bid-button:hover {
+        background-color: #1e8c1e;
+      }
+
+      /* Back button style */
+      .back-button {
+        background-color: #2daa26;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+        margin-top: 20px;
+      }
+
+      .back-button:hover {
+        background-color: #1e8c1e;
+      }
+    </style>
+  </head>
+  <header>
+    <div class="header-left">
+      <!-- Back button, redirecting to the auction list -->
+      <a href="{% url 'auction_list' %}">
+        <button class="back-button">Back to Auction List</button>
+      </a>
+    </div>
+    <div class="header-right">
+      {% if user.is_authenticated %}
+      <span>Welcome, {{ user.username }}!</span>
+      <form
+        id="logout-form"
+        action="{% url 'logout' %}"
+        method="post"
+        style="display: inline"
+      >
+        {% csrf_token %}
+        <button type="submit" class="logout-button">Logout</button>
+      </form>
+      {% else %}
+      <a href="{% url 'login' %}">Login</a>
+      {% endif %}
+    </div>
+  </header>
+  <body>
+    <div class="auction-details-container">
+      <div class="auction-card">
+        <h1 style="text-align: center">{{ auction.date_type }}</h1>
+
+        <img src="{{ auction.image_url }}" alt="{{ auction.date_type }}" />
+        <p>Quantity: {{ auction.quantity }} tons</p>
+        <p>Average Piece Weight: {{ auction.avg_piece_weight }} grams</p>
+        <p id="price-{{ auction.id }}">Price: {{ auction.price }}</p>
+        <h2>Category: {{ auction.category }}</h2>
+
+        <!-- {% if auction.closed %}
+          <button class="closed-button" disabled>Auction Closed</button>
+          {% elif user.is_authenticated %}
+          <a href="{% url 'auction_detail' auction.id %}">
+            <button class="bid-button">Bid</button>
+          </a>
+          {% else %}
+          <a href="{% url 'login' %}">
+            <button class="login-button">Login to Bid</button>
+          </a>
+          {% endif %} -->
+
+        <div class="bid-button-container">
+          {% if auction.closed %}
+          <button disabled>This auction is closed</button>
+          {% elif user.is_authenticated %}
+          <form method="post" action="{% url 'place_bid' auction.id %}">
+            {% csrf_token %}
+            <button type="submit" class="bid-button">Place Bid</button>
+          </form>
+          {% else %}
+          <a href="{% url 'login' %}">
+            <button class="login-button">Login to Bid</button>
+          </a>
+          {% endif %}
+
+          <!-- Display Bids -->
+          <h2>Bid History</h2>
+          <table class="bids-table" id="bid-history">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Price</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for bid in bids %}
+              <tr>
+                <td>{{ bid.user.username }}</td>
+                <td>{{ bid.price }}</td>
+                <td>{{ bid.date }}</td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="3">No bids yet.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 20px">
+      <a href="{% url 'auction_list' %}">Back to Auction List</a>
+    </div>
+  </body>
+  <script>
+    // Polling function to update the bid price and bid history every 5 seconds
+    setInterval(function () {
+      $.ajax({
+        url: `/auction/{{ auction.id }}/current_price/`, // Endpoint for fetching current price and bids
+        method: "GET",
+        success: function (data) {
+          // Update the price in the DOM
+          $("#price-{{ auction.id }}").text("Price:" + data.new_price);
+
+          // Update the bid history in the DOM
+          $("#bid-history tbody").html(""); // Clear current bid history
+          data.bids.forEach(function (bid) {
+            $("#bid-history tbody").append(
+              `<tr><td>${bid.user}</td><td>${bid.price}</td><td>${bid.date}</td></tr>`
+            );
+          });
+        },
+        error: function (xhr, status, error) {
+          console.log("Error fetching updated bid data:", error);
+        },
+      });
+    }, 500); // Poll every 5 seconds
+  </script>
+</html>

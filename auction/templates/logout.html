@@ -1,0 +1,5 @@
+{% if user.is_authenticated == False %}
+<script type="text/javascript">
+  window.location.href = "{% url '/' %}";
+</script>
+{% endif %}

@@ -1,0 +1,11 @@
+body {
+    background-color: #F4FFED;
+    color: #2DAA26;
+}
+
+.auction-item {
+    border: 1px solid #2DAA26;
+    background-color: white;
+    margin: 10px;
+    padding: 15px;
+}
