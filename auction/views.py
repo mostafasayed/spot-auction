@@ -19,13 +19,18 @@ ALLOWED_USERS = ['mostafa@test.com', 'user1@example.com', 'user2@example.com']
 def auction_list(request):
     # Fetch all auctions from the database
     auctions = Auction.objects.all()
+    # Get the selected status values from the request
+    selected_status = request.GET.getlist('status')
 
-    # Apply the closed filter
-    status = request.GET.get('status')
-    if status == 'open':
-        auctions = auctions.filter(closed=False)  # Filter for open auctions (not closed)
-    elif status == 'closed':
-        auctions = auctions.filter(closed=True)  # Filter for closed auctions
+    # Apply filtering based on the selected status
+    if 'open' in selected_status:
+        auctions = auctions.filter(closed=False)
+    
+    if 'closed' in selected_status:
+        auctions = auctions.filter(closed=True, winner=None)
+    
+    if 'won' in selected_status:
+        auctions = auctions.filter(winner=True)
 
     # Render the template with auctions data
     response = render(request, 'auction/auction_list.html', {'auctions': auctions})
@@ -91,3 +96,19 @@ def auction_detail(request, auction_id):
     auction = get_object_or_404(Auction, id=auction_id)
     bids = auction.bids.all()  # Fetch all bids for the auction, sorted by newest first
     return render(request, 'auction/auction_detail.html', {'auction': auction, 'bids': bids})
+
+@login_required
+def mark_as_won(request, auction_id):
+    auction = get_object_or_404(Auction, id=auction_id)
+    
+    if not request.user.is_staff:
+        return redirect('auction_detail', auction_id=auction_id)
+
+    highest_bid = auction.bids.order_by('-price').first()
+
+    if highest_bid:
+        auction.winner = highest_bid.user
+        auction.closed = True  # Mark auction as closed when won
+        auction.save()
+
+    return redirect('auction_detail', auction_id=auction.id)

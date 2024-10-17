@@ -16,6 +16,7 @@ class Auction(models.Model):
     bid_step = models.DecimalField(max_digits=10, decimal_places=2, default=1.00)  # New field for bid increment
     end_date = models.DateTimeField(blank=True, null=True)
     closed = models.BooleanField(default=False)  # New field to mark auctions as open/closed
+    winner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
 
     def __str__(self):

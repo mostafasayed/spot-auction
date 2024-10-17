@@ -159,6 +159,10 @@
       .back-button:hover {
         background-color: #1e8c1e;
       }
+      .highlight {
+        background-color: #f0f8ff; /* Light blue background for highlighting */
+        font-weight: bold;
+      }
     </style>
   </head>
   <header>
@@ -210,7 +214,12 @@
 
         <div class="bid-button-container">
           {% if auction.closed %}
-          <button disabled>This auction is closed</button>
+            {% if auction.winner %}
+                <button disabled>Auction Won by {{ auction.winner.username }}</button>
+            {% else %}
+                <button disabled>This auction is closed</button>
+            {% endif %}
+          
           {% elif user.is_authenticated %}
           <form method="post" action="{% url 'place_bid' auction.id %}">
             {% csrf_token %}
@@ -221,12 +230,13 @@
             <button class="login-button">Login to Bid</button>
           </a>
           {% endif %}
-
+          {% load tz %}
           <!-- Display Bids -->
           <h2>Bid History</h2>
           <table class="bids-table" id="bid-history">
             <thead>
               <tr>
+                <th>#</th>
                 <th>User</th>
                 <th>Price</th>
                 <th>Date</th>
@@ -234,10 +244,11 @@
             </thead>
             <tbody>
               {% for bid in bids %}
-              <tr>
+              <tr {% if bid.user == request.user %}class="highlight"{% endif %}>
+                <td>{{ forloop.counter }}</td>  <!-- Sequence number -->
                 <td>{{ bid.user.username }}</td>
                 <td>{{ bid.price }}</td>
-                <td>{{ bid.date }}</td>
+                <td>{{ bid.date|timezone:"Asia/Dubai" }}</td>
               </tr>
               {% empty %}
               <tr>
@@ -255,27 +266,53 @@
     </div>
   </body>
   <script>
-    // Polling function to update the bid price and bid history every 5 seconds
     setInterval(function () {
       $.ajax({
-        url: `/auction/{{ auction.id }}/current_price/`, // Endpoint for fetching current price and bids
+        url: `/auction/{{ auction.id }}/current_price/`,  // Endpoint for fetching current price and bids
         method: "GET",
         success: function (data) {
           // Update the price in the DOM
-          $("#price-{{ auction.id }}").text("Price:" + data.new_price);
+          $("#price-{{ auction.id }}").text("Price: " + data.new_price);
 
           // Update the bid history in the DOM
-          $("#bid-history tbody").html(""); // Clear current bid history
+          $("#bid-history tbody").html("");  // Clear current bid history
+
+          let counter = 1;  // Initialize the sequence number
+
+          // Loop through the bids and append them to the table
           data.bids.forEach(function (bid) {
+            const isCurrentUser = (bid.user === "{{ request.user }}");  // Check if it's the current user's bid
+            const highlightClass = isCurrentUser ? 'highlight' : '';  // Add highlight class if it's the current user
+            
+             // Convert the bid date to GST
+            const bidDate = new Date(bid.date);
+            bidDate.setHours(bidDate.getHours() + 4);
+            const options = { timeZone: 'Asia/Dubai', hour12: true };
+            const bidDateInGST = bidDate.toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'short',  // Abbreviated month (e.g., "Oct.")
+              day: '2-digit',
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: true
+            });
             $("#bid-history tbody").append(
-              `<tr><td>${bid.user}</td><td>${bid.price}</td><td>${bid.date}</td></tr>`
+              `<tr class="${highlightClass}">
+                <td>${counter}</td>
+                <td>${bid.user}</td>
+                <td>${bid.price}</td>
+                <td>${bidDateInGST}</td>
+              </tr>`
             );
+            
+            counter++;  // Increment the sequence number
           });
         },
         error: function (xhr, status, error) {
           console.log("Error fetching updated bid data:", error);
         },
       });
-    }, 500); // Poll every 5 seconds
+    }, 500);  // Poll every 5 seconds
+
   </script>
 </html>
