@@ -195,9 +195,11 @@
         <h1 style="text-align: center">{{ auction.date_type }}</h1>
 
         <img src="{{ auction.image_url }}" alt="{{ auction.date_type }}" />
-        <p>Quantity: {{ auction.quantity }} tons</p>
-        <p>Average Piece Weight: {{ auction.avg_piece_weight }} grams</p>
-        <p id="price-{{ auction.id }}">Price: {{ auction.price }}</p>
+        <h4>Quantity</h4>
+            <p>{{ auction.quantity }} tons</p>
+            <h4>Average Weight per Piece</h4>
+            <p>{{ auction.avg_piece_weight }} grams</p>
+            <h4>Starting Price per KG</h4><p id="price-{{ auction.id }}"> {{ auction.price }} AED</p>
         <h2>Category: {{ auction.category }}</h2>
 
         <!-- {% if auction.closed %}
@@ -272,7 +274,7 @@
         method: "GET",
         success: function (data) {
           // Update the price in the DOM
-          $("#price-{{ auction.id }}").text("Price: " + data.new_price);
+          $("#price-{{ auction.id }}").text(data.new_price + ' AED');
 
           // Update the bid history in the DOM
           $("#bid-history tbody").html("");  // Clear current bid history
