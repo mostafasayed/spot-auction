@@ -17,6 +17,7 @@ class Auction(models.Model):
     end_date = models.DateTimeField(blank=True, null=True)
     closed = models.BooleanField(default=False)  # New field to mark auctions as open/closed
     winner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    is_active = models.BooleanField(default=True) 
 
 
     def __str__(self):

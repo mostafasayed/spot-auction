@@ -18,19 +18,19 @@ ALLOWED_USERS = ['mostafa@test.com', 'user1@example.com', 'user2@example.com']
 
 def auction_list(request):
     # Fetch all auctions from the database
-    auctions = Auction.objects.all()
+    auctions = Auction.objects.filter(is_active=True)
     # Get the selected status values from the request
     selected_status = request.GET.getlist('status')
 
     # Apply filtering based on the selected status
     if 'open' in selected_status:
-        auctions = auctions.filter(closed=False)
+        auctions = auctions.filter(closed=False, is_active=True)
     
     if 'closed' in selected_status:
-        auctions = auctions.filter(closed=True, winner=None)
+        auctions = auctions.filter(closed=True, winner=None, is_active=True)
     
     if 'won' in selected_status:
-        auctions = auctions.filter(winner=True)
+        auctions = auctions.filter(winner=True, is_active=True)
 
     # Render the template with auctions data
     response = render(request, 'auction/auction_list.html', {'auctions': auctions})
